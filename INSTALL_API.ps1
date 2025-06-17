@@ -48,7 +48,8 @@ $elevated = ([System.Security.Principal.WindowsPrincipal] [System.Security.Princ
 
 if (-not $elevated -and -not $NoRestart -and -not $SkipRestart) {
     Write-Warn "Le script nécessite des privilèges administrateur pour certaines parties. Redémarrage en mode Admin..."
-    Start-Process PowerShell -ArgumentList "-File `"$PSCommandPath`" -NoRestart -SkipRestart" -Verb RunAs
+    Start-Process PowerShell -ArgumentList "-File `"$PSCommandPath`" -InstallDir `"$InstallDir`" -NoRestart -SkipRestart " -Verb RunAs
+    
     exit
 }
 
@@ -237,7 +238,7 @@ try {
 
     Write-Warn "Redémarrage du script sans élévation pour la suite..."
     if (-not $SkipRestart) {
-        Start-Process PowerShell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`" -NoRestart -SkipRestart" -NoNewWindow
+        Start-Process PowerShell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`" -NoRestart -InstallDir `"$InstallDir`" -SkipRestart" -NoNewWindow
         exit
     }
 
@@ -256,7 +257,7 @@ if ($elevated -and -not $NoRestart -and -not $SkipRestart) {
     if (Test-Path $tempIndicatorPath) {
         Remove-Item $tempIndicatorPath -Force
     }
-    Start-Process PowerShell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`" -NoRestart -SkipRestart" -NoNewWindow
+    Start-Process PowerShell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`" -NoRestart -InstallDir `"$InstallDir`" -SkipRestart" -NoNewWindow
     exit
 }
 
