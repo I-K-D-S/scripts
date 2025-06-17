@@ -1,6 +1,7 @@
 param (
     [switch]$NoRestart,
-    [switch]$SkipRestart
+    [switch]$SkipRestart,
+    [string]$InstallDir = "$PWD.Path\kayros.api"
 )
 
 # Fonctions d'affichage harmonisées
@@ -404,7 +405,8 @@ Host github.com
     }
 
     # Vérification et gestion du dépôt GitHub
-    $targetPath = (Join-Path $PSScriptRoot "kayros.api")  # Utilisation du répertoire du script
+    $targetPath = $InstallDir
+
     if (!(Test-Path $targetPath)) {
         Write-Info "Clonage du dépôt kayros.api..."
         git clone git@github.com:I-K-D-S/kayros.api.git $targetPath
