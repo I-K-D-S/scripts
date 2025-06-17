@@ -4,33 +4,33 @@ param (
 )
 
 # Fonctions d'affichage harmonisées
-function Write-Separator { Write-Host ("-"*60) -ForegroundColor DarkGray }
-function Write-Info($msg)    { Write-Host "ℹ️  $msg" -ForegroundColor Cyan }
+function Write-Separator { Write-Host ("-" * 60) -ForegroundColor DarkGray }
+function Write-Info($msg) { Write-Host "ℹ️  $msg" -ForegroundColor Cyan }
 function Write-Success($msg) { Write-Host "✅ $msg" -ForegroundColor Green }
-function Write-Warn($msg)    { Write-Host "⚠️  $msg" -ForegroundColor Yellow }
-function Write-ErrorMsg($msg){ Write-Host "❌ $msg" -ForegroundColor Red }
+function Write-Warn($msg) { Write-Host "⚠️  $msg" -ForegroundColor Yellow }
+function Write-ErrorMsg($msg) { Write-Host "❌ $msg" -ForegroundColor Red }
 
 # Affichage ASCII Art KAYROS API
 function Show-AsciiArt {
     1..6 | ForEach-Object { Write-Host "" }
-#     Write-Host @"
-#     ___  __    ________      ___    ___ ________  ________  ________      
-#     |\  \|\  \ |\   __  \    |\  \  /  /|\   __  \|\   __  \|\   ____\     
-#     \ \  \/  /|\ \  \|\  \   \ \  \/  / | \  \|\  \ \  \|\  \ \  \___|_    
-#      \ \   ___  \ \   __  \   \ \    / / \ \   _  _\ \  \\\  \ \_____  \   
-#       \ \  \\ \  \ \  \ \  \   \/  /  /   \ \  \\  \\ \  \\\  \|____|\  \  
-#        \ \__\\ \__\ \__\ \__\__/  / /      \ \__\\ _\\ \_______\____\_\  \ 
-#         \|__| \|__|\|__|\|__|\___/ /        \|__|\|__|\|_______|\_________\
-#                             \|___|/                            \|_________|
-#      ________  ________  ___                                               
-#     |\   __  \|\   __  \|\  \                                              
-#     \ \  \|\  \ \  \|\  \ \  \                                             
-#      \ \   __  \ \   ____\ \  \                                            
-#       \ \  \ \  \ \  \___|\ \  \                                           
-#        \ \__\ \__\ \__\    \ \__\                                          
-#         \|__|\|__|\|__|     \|__|                                            
-# "@ -ForegroundColor Magenta
-#     Write-Separator
+    #     Write-Host @"
+    #     ___  __    ________      ___    ___ ________  ________  ________      
+    #     |\  \|\  \ |\   __  \    |\  \  /  /|\   __  \|\   __  \|\   ____\     
+    #     \ \  \/  /|\ \  \|\  \   \ \  \/  / | \  \|\  \ \  \|\  \ \  \___|_    
+    #      \ \   ___  \ \   __  \   \ \    / / \ \   _  _\ \  \\\  \ \_____  \   
+    #       \ \  \\ \  \ \  \ \  \   \/  /  /   \ \  \\  \\ \  \\\  \|____|\  \  
+    #        \ \__\\ \__\ \__\ \__\__/  / /      \ \__\\ _\\ \_______\____\_\  \ 
+    #         \|__| \|__|\|__|\|__|\___/ /        \|__|\|__|\|_______|\_________\
+    #                             \|___|/                            \|_________|
+    #      ________  ________  ___                                               
+    #     |\   __  \|\   __  \|\  \                                              
+    #     \ \  \|\  \ \  \|\  \ \  \                                             
+    #      \ \   __  \ \   ____\ \  \                                            
+    #       \ \  \ \  \ \  \___|\ \  \                                           
+    #        \ \__\ \__\ \__\    \ \__\                                          
+    #         \|__|\|__|\|__|     \|__|                                            
+    # "@ -ForegroundColor Magenta
+    #     Write-Separator
 }
 
 # Définir le chemin du fichier indicateur
@@ -59,16 +59,18 @@ function Ensure-WebAdministration {
         try {
             Enable-WindowsOptionalFeature -Online -FeatureName IIS-ManagementScriptingTools -All -NoRestart -ErrorAction Stop
             Write-Success "Le rôle a été installé. Tentative de chargement du module sans redémarrage..."
-            $env:PSModulePath = [System.Environment]::GetEnvironmentVariable("PSModulePath","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("PSModulePath","User")
+            $env:PSModulePath = [System.Environment]::GetEnvironmentVariable("PSModulePath", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("PSModulePath", "User")
             Import-Module WebAdministration -ErrorAction Stop
             Write-Success "Module chargé sans redémarrage."
-        } catch {
+        }
+        catch {
             Write-ErrorMsg "Le module n'a pas pu être chargé immédiatement. Un redémarrage peut être nécessaire."
             Write-Warn "Si le problème persiste après redémarrage, installez manuellement via les fonctionnalités Windows."
             pause
             exit 0
         }
-    } else {
+    }
+    else {
         Import-Module WebAdministration
     }
 }
@@ -90,7 +92,7 @@ function Install-UrlRewrite {
 
 function Install-IISNode {
     Write-Host "Installation de IISNode..."
-    $url ="https://github.com/azure/iisnode/releases/download/v0.2.21/iisnode-full-v0.2.21-X64.msi"
+    $url = "https://github.com/azure/iisnode/releases/download/v0.2.21/iisnode-full-v0.2.21-X64.msi"
     $msi = "$env:TEMP\iisnode.msi"
     Invoke-WebRequest -Uri $url -OutFile $msi
     Start-Process msiexec.exe -Wait -ArgumentList "/i `"$msi`" /quiet"
@@ -137,11 +139,13 @@ function Install-IISStack {
     # URL Rewrite
     if (Test-ModuleInstalled "RewriteModule") {
         Write-Success "URL Rewrite déjà installé."
-    } else {
+    }
+    else {
         Install-UrlRewrite
         if (Test-ModuleInstalled "RewriteModule") {
             Write-Success "URL Rewrite installé avec succès."
-        } else {
+        }
+        else {
             Write-ErrorMsg "Échec de l'installation de URL Rewrite."
         }
     }
@@ -149,11 +153,13 @@ function Install-IISStack {
     # IISNode
     if (Test-ModuleInstalled "iisnode") {
         Write-Success "IISNode déjà installé."
-    } else {
+    }
+    else {
         Install-IISNode
         if (Test-ModuleInstalled "iisnode") {
             Write-Success "IISNode installé avec succès."
-        } else {
+        }
+        else {
             Write-ErrorMsg "Échec de l'installation de IISNode."
         }
     }
@@ -201,7 +207,8 @@ try {
     # Vérification et installation de Node.js
     try {
         $nodeVersion = & node -v 2>$null
-        if ($nodeVersion -notmatch "^v22\..*") {  # Vérifier si la version actuelle est différente de 22
+        if ($nodeVersion -notmatch "^v22\..*") {
+            # Vérifier si la version actuelle est différente de 22
             throw "Node.js n'est pas en version 22."
         }
         Write-Success "Node.js déjà installé ($nodeVersion)."
@@ -466,7 +473,8 @@ Host github.com
         New-WebSite -Name "kayros.api" -Port 8850 -PhysicalPath $targetPath -Force
         Set-ItemProperty "IIS:\Sites\kayros.api" -Name applicationPool -Value "DefaultAppPool"
         Write-Success "Site IIS kayros.api créé."
-    } else {
+    }
+    else {
         Write-Success "Site IIS kayros.api déjà existant."
     }
 
@@ -479,7 +487,7 @@ Host github.com
     Write-Info "Attribution des permissions au pool d'application '$appPoolIdentity' sur '$documentsPath'..."
     try {
         $acl = Get-Acl -Path $documentsPath
-        $permission = "$appPoolIdentity","ReadAndExecute","ContainerInherit, ObjectInherit","None","Allow"
+        $permission = "$appPoolIdentity", "ReadAndExecute", "ContainerInherit, ObjectInherit", "None", "Allow"
         $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule $permission
         $acl.AddAccessRule($accessRule)
         Set-Acl -Path $documentsPath -AclObject $acl
@@ -493,7 +501,7 @@ Host github.com
     Write-Info "Attribution des permissions au pool d'application '$appPoolIdentity' sur '$targetPath'..."
     try {
         $acl = Get-Acl -Path $targetPath
-        $permission = "$appPoolIdentity","Modify, FullControl","ContainerInherit, ObjectInherit","None","Allow"
+        $permission = "$appPoolIdentity", "Modify, FullControl", "ContainerInherit, ObjectInherit", "None", "Allow"
         $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule $permission
         $acl.AddAccessRule($accessRule)
         Set-Acl -Path $targetPath -AclObject $acl
@@ -507,7 +515,7 @@ Host github.com
     Write-Info "Attribution des permissions de lecture à IUSR sur '$targetPath'..."
     try {
         $acl = Get-Acl -Path $targetPath
-        $permission = "IUSR","Read","ContainerInherit, ObjectInherit","None","Allow"
+        $permission = "IUSR", "Read", "ContainerInherit, ObjectInherit", "None", "Allow"
         $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule $permission
         $acl.AddAccessRule($accessRule)
         Set-Acl -Path $targetPath -AclObject $acl
@@ -523,7 +531,8 @@ Host github.com
         Stop-Website -Name "kayros.api"
         Start-Website -Name "kayros.api"
         Write-Success "Site kayros.api redémarré avec succès."
-    } catch {
+    }
+    catch {
         Write-ErrorMsg "Erreur lors du redémarrage du site : $_"
     }
     Write-Separator
