@@ -1,7 +1,7 @@
 param (
     [switch]$NoRestart,
     [switch]$SkipRestart,
-    [string]$InstallDir = "$PWD.Path\kayros.api"
+    [string]$InstallDir = "$PWD\kayros.api"
 )
 
 # Fonctions d'affichage harmonisées
@@ -394,7 +394,7 @@ Host github.com
         Write-Info "`n🔑 **Clé SSH publique:**`n$sshPublicKey`n"
         Write-Info "Clé SSH copiée dans le presse-papiers. Vous pouvez la coller sur GitHub.`n"
         Write-Info "`n🌐 **URL GitHub pour l'ajout de la clé:**`n$deployKeyUrl`n"
-    
+    <
         # Copier la clé publique dans le presse-papiers (nécessite PowerShell 5+)
         $sshPublicKey | Set-Clipboard
 
