@@ -227,12 +227,16 @@ try {
     Write-Separator
 
     # Actualisation des variables d'environnement
-    Write-Info "Actualisation des variables d'environnement pour reconnaître npm..."
-    $newPath = [Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [Environment]::GetEnvironmentVariable("Path", "User")
-    [Environment]::SetEnvironmentVariable("Path", $newPath, "Process")
-    [Environment]::SetEnvironmentVariable("Path", $newPath, "User")
-    [Environment]::SetEnvironmentVariable("Path", $newPath, "Machine")
-    $env:Path = $newPath
+    $machinePath = [Environment]::GetEnvironmentVariable("Path", "Machine") -split ";"
+$userPath = [Environment]::GetEnvironmentVariable("Path", "User") -split ";"
+
+$newPath = ($machinePath + $userPath | Select-Object -Unique) -join ";"
+
+[Environment]::SetEnvironmentVariable("Path", $newPath, "Process")
+[Environment]::SetEnvironmentVariable("Path", $newPath, "User")
+[Environment]::SetEnvironmentVariable("Path", $newPath, "Machine")
+$env:Path = $newPath
+
     Write-Success "Variables d'environnement actualisées."
     Write-Separator
 
